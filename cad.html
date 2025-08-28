@@ -100,13 +100,14 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
         // Configuração do Firebase com suas credenciais
         const firebaseConfig = {
             apiKey: "AIzaSyAAGCz7m_4obWBtz5P-7gP8jbkFasLzcs0",
             authDomain: "fomos-52a64.firebaseapp.com",
+            databaseURL: "https://fomos-52a64-default-rtdb.firebaseio.com", // URL do Realtime Database
             projectId: "fomos-52a64",
             storageBucket: "fomos-52a64.firebasestorage.app",
             messagingSenderId: "640156456157",
@@ -117,7 +118,7 @@
         // Inicializa o Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const auth = app.auth();
-        const db = app.firestore();
+        const db = app.database(); // Obtém a referência para o Realtime Database
 
         // Obtém os elementos do DOM
         const registrationForm = document.getElementById('registrationForm');
@@ -151,16 +152,15 @@
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
 
-                // 2. Salva os dados adicionais do usuário no Firestore
-                // O ID do documento é o mesmo ID do usuário (uid), o que é uma boa prática de segurança
-                await db.collection('users').doc(user.uid).set({
+                // 2. Salva os dados adicionais do usuário no Realtime Database
+                // O caminho será `users/{UID_do_usuario}`
+                await db.ref('users/' + user.uid).set({
                     fullName: fullName,
                     phone: phone,
                     city: city,
                     state: state,
                     country: country,
                     email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp() // Adiciona um carimbo de data e hora
                 });
 
                 // Mostra uma mensagem de sucesso

@@ -68,6 +68,23 @@
             width: 100%;
             height: 100%;
         }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #ADD8E6;
+            font-weight: bold;
+            flex-wrap: wrap;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ADD8E6;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen p-6">
@@ -132,7 +149,9 @@
     <main id="dashboard" class="hidden mt-10 w-full max-w-3xl">
         <div class="bg-[#111] border border-pink-500/30 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
             <h2 class="text-2xl font-bold mb-4 neon text-center">Dashboard</h2>
-            <p class="mb-4 text-center">Logado como: <span id="userEmail" class="font-mono text-cyan-400 break-all"></span></p>
+            <div id="userProfile" class="user-profile mb-4">
+                <!-- Ícone e email do usuário serão inseridos aqui pelo JavaScript -->
+            </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <button class="btn-dashboard flex items-center justify-center gap-2" id="btn1" onclick="window.open('https://chat.whatsapp.com/KtQeB6Ua9jI0wWEBqrPDyL?mode=ac_t','_blank')">
                     <i class="fab fa-whatsapp"></i> VIP
@@ -140,16 +159,16 @@
                 <button class="btn-dashboard" id="btn2">
                     <i class="fa-solid fa-rocket"></i> Trend
                 </button>
-                <button class="btn-dashboard" id="btn3" onclick="alert('Moeda secreta em construção!')">
+                <button class="btn-dashboard" id="btn3">
                     <i class="fa-solid fa-bitcoin-sign"></i> Secret
                 </button>
-                <button class="btn-dashboard" id="btn4" onclick="alert('Relatório em construção!')">
+                <button class="btn-dashboard" id="btn4">
                     <i class="fa-solid fa-paperclip"></i> Report
                 </button>
                 <button class="btn-dashboard" id="btn5">
                     <i class="fa-solid fa-parachute-box"></i> Airdrop
                 </button>
-                <button class="btn-dashboard" id="btn6" onclick="alert('Trade em construção!')">
+                <button class="btn-dashboard" id="btn6">
                     <i class="fa-solid fa-money-bill-trend-up"></i> Trade
                 </button>
             </div>
@@ -170,10 +189,22 @@
     <!-- SDKs do Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <script>
-        // Suas credenciais do Firebase
-        const firebaseConfig = {
+        // Use a função crypto.randomUUID() para gerar um UUID.
+        if (typeof crypto.randomUUID !== 'function') {
+            crypto.randomUUID = () => {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            };
+        }
+
+        // Variáveis globais fornecidas pelo ambiente
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyAAGCz7m_4obWBtz5P-7gP8jbkFasLzcs0",
             authDomain: "fomos-52a64.firebaseapp.com",
             projectId: "fomos-52a64",
@@ -182,10 +213,12 @@
             appId: "1:640156456157:web:53375bbc27fcc914787734",
             measurementId: "G-GZ7844HHS9"
         };
-        
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
         // Inicializa o Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const auth = app.auth();
+        const db = app.firestore();
 
         // Elementos do DOM
         const loginSection = document.getElementById('loginSection');
@@ -197,9 +230,12 @@
         const showLoginBtn = document.getElementById('showLoginBtn');
         const loginStatus = document.getElementById('loginStatus');
         const registerStatus = document.getElementById('registerStatus');
-        const userEmailSpan = document.getElementById('userEmail');
+        const userProfileDiv = document.getElementById('userProfile');
         const logoutBtn = document.getElementById('logoutBtn');
-        
+        const btn3 = document.getElementById('btn3');
+        const btn4 = document.getElementById('btn4');
+        const btn6 = document.getElementById('btn6');
+
         // Lógica de alternância entre login e cadastro
         showRegisterBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -220,6 +256,27 @@
             element.textContent = message;
             element.style.color = isError ? 'red' : 'green';
         }
+
+        // Modal de aviso
+        const spamModal = document.getElementById('spamModal');
+        const spamModalClose = document.getElementById('spamModalClose');
+        const spamIframeContainer = document.getElementById('spamIframeContainer');
+
+        function showWarningModal(message) {
+            spamIframeContainer.innerHTML = `<div class="p-6 text-center text-white text-lg font-bold">
+                                                 <p>${message}</p>
+                                             </div>`;
+            spamModal.style.display = 'flex';
+        }
+
+        spamModalClose.addEventListener('click', () => {
+            spamIframeContainer.innerHTML = '';
+            spamModal.style.display = 'none';
+        });
+
+        btn3.addEventListener('click', () => showWarningModal('Moeda secreta em construção!'));
+        btn4.addEventListener('click', () => showWarningModal('Relatório em construção!'));
+        btn6.addEventListener('click', () => showWarningModal('Trade em construção!'));
 
         // Evento de submissão do formulário de login
         loginForm.addEventListener('submit', async (e) => {
@@ -280,23 +337,46 @@
             await auth.signOut();
             // O onAuthStateChanged vai cuidar de mostrar a tela de login
         });
-
+        
+        // Função para autenticação inicial com token
+        async function authenticateWithToken() {
+            try {
+                if (initialAuthToken) {
+                    await auth.signInWithCustomToken(initialAuthToken);
+                } else {
+                    await auth.signInAnonymously();
+                }
+            } catch (error) {
+                console.error("Erro na autenticação inicial:", error);
+            }
+        }
+        
         // Listener de estado de autenticação do Firebase
-        // Essa é a melhor prática para gerenciar a interface
         auth.onAuthStateChanged(user => {
             if (user) {
                 // Usuário logado
                 loginSection.classList.add('hidden');
                 registerSection.classList.add('hidden');
                 dashboard.classList.remove('hidden');
-                userEmailSpan.textContent = user.email;
+                
+                // Exibir a foto de perfil aleatória e o email do usuário
+                userProfileDiv.innerHTML = `
+                    <img src="https://testingbot.com/free-online-tools/random-avatar/64?u=${user.uid}" alt="Avatar do Usuário" class="rounded-full border-2 border-cyan-400">
+                    <span class="font-mono text-cyan-400 break-all">${user.email}</span>
+                `;
+
+                // Loga o user ID no console para depuração
+                console.log("Usuário logado. ID:", user.uid);
             } else {
                 // Nenhum usuário logado
                 dashboard.classList.add('hidden');
                 loginSection.classList.remove('hidden');
             }
         });
-        
+
+        // Chama a função de autenticação inicial para entrar anonimamente ou com o token
+        authenticateWithToken();
+
         // Lógica dos botões que abrem modais
         const btn2 = document.getElementById('btn2');
         const btn5 = document.getElementById('btn5');
@@ -321,11 +401,6 @@
 
         btn5.addEventListener('click', () => {
             openIframeModal('airdrop.html');
-        });
-
-        spamModalClose.addEventListener('click', () => {
-            spamIframeContainer.innerHTML = '';
-            spamModal.style.display = 'none';
         });
 
     </script>

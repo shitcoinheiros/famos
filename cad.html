@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // 🔹 Configuração do Firebase (suas credenciais)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAGCz7m_4obWBtz5P-7gP8jbkFasLzcs0",
+      authDomain: "fomos-52a64.firebaseapp.com",
+      projectId: "fomos-52a64",
+      storageBucket: "fomos-52a64.firebasestorage.app",
+      messagingSenderId: "640156456157",
+      appId: "1:640156456157:web:53375bbc27fcc914787734",
+      measurementId: "G-GZ7844HHS9"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Função de cadastro
+    async function cadastrar() {
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        alert("✅ Usuário cadastrado com sucesso!");
+        console.log("Novo usuário:", userCredential.user);
+      } catch (error) {
+        alert("❌ Erro: " + error.message);
+        console.error(error);
+      }
+    }
+
+    // Disponibiliza a função no escopo global
+    window.cadastrar = cadastrar;
+  </script>
+</head>
+<body>
+  <h2>Cadastro</h2>
+  <input type="email" id="email" placeholder="Email"><br>
+  <input type="password" id="senha" placeholder="Senha"><br>
+  <button onclick="cadastrar()">Cadastrar</button>
+</body>
+</html>

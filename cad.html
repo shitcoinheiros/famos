@@ -6,6 +6,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     // 🔹 Configuração do Firebase (suas credenciais)
     const firebaseConfig = {
@@ -21,16 +22,35 @@
     // Inicializa Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     // Função de cadastro
     async function cadastrar() {
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
       const email = document.getElementById("email").value;
       const senha = document.getElementById("senha").value;
 
+      if (!nome || !telefone || !email || !senha) {
+        alert("⚠️ Preencha todos os campos!");
+        return;
+      }
+
       try {
+        // Cria usuário no Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        // Salva dados adicionais no Firestore
+        await setDoc(doc(db, "users", user.uid), {
+          nome: nome,
+          telefone: telefone,
+          email: email,
+          isAuthorized: false // 🔐 só entra se você aprovar depois
+        });
+
         alert("✅ Usuário cadastrado com sucesso!");
-        console.log("Novo usuário:", userCredential.user);
+        console.log("Novo usuário:", user);
       } catch (error) {
         alert("❌ Erro: " + error.message);
         console.error(error);
@@ -43,6 +63,8 @@
 </head>
 <body>
   <h2>Cadastro</h2>
+  <input type="text" id="nome" placeholder="Nome completo"><br>
+  <input type="text" id="telefone" placeholder="Telefone"><br>
   <input type="email" id="email" placeholder="Email"><br>
   <input type="password" id="senha" placeholder="Senha"><br>
   <button onclick="cadastrar()">Cadastrar</button>

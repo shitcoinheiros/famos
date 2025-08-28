@@ -1,675 +1,338 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>FOMO SOCIAL - Login</title>
-
-    <!-- Tailwind CSS para estilização -->
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome para ícones -->
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <style>
-
-        /* Estilos personalizados com tema neon */
-
-        body { background: #0d0f0f; color: #ADD8E6; font-family: 'Inter', sans-serif; }
-
-        .neon { text-shadow: 0 0 5px #FF69B4, 0 0 10px #FF69B4, 0 0 20px #FF69B4; }
-
-       
-
-        .btn-dashboard {
-
-            background-color: #111;
-
-            border: 2px solid #ADD8E6;
-
-            color: #ADD8E6;
-
-            font-weight: bold;
-
-            padding: 15px 20px;
-
-            border-radius: 12px;
-
-            cursor: pointer;
-
-            text-align: center;
-
-            transition: all 0.2s ease-in-out;
-
-        }
-
-        .btn-dashboard:disabled {
-
-            opacity: 0.5;
-
-            cursor: not-allowed;
-
-        }
-
-        .btn-dashboard:hover:enabled {
-
-            background-color: #ADD8E6;
-
-            color: black;
-
-            box-shadow: 0 0 10px #ADD8E6, 0 0 20px #ADD8E6;
-
-        }
-
-
-
-        #spamModal {
-
-            display: none;
-
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0,0,0,0.85);
-
-            justify-content: center;
-
-            align-items: center;
-
-            z-index: 50;
-
-        }
-
-        #spamModalContent {
-
-            background: #111;
-
-            width: 90%;
-
-            max-width: 4xl;
-
-            height: 80%;
-
-            border-radius: 1rem;
-
-            position: relative;
-
-            overflow: hidden;
-
-        }
-
-        #spamModalClose {
-
-            position: absolute;
-
-            top: 1px;
-
-            right: 1px;
-
-            background: #FF2E2E;
-
-            color: white;
-
-            border: none;
-
-            padding: 5px 10px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            z-index: 10;
-
-        }
-
-        #spamIframeContainer {
-
-            width: 100%;
-
-            height: 100%;
-
-        }
-
-    </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOMO SOCIAL - Login</title>
+    <!-- Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Estilos personalizados com tema neon */
+        body { background: #0d0f0f; color: #ADD8E6; font-family: 'Inter', sans-serif; }
+        .neon { text-shadow: 0 0 5px #FF69B4, 0 0 10px #FF69B4, 0 0 20px #FF69B4; }
+        
+        .btn-dashboard {
+            background-color: #111;
+            border: 2px solid #ADD8E6;
+            color: #ADD8E6;
+            font-weight: bold;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-dashboard:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-dashboard:hover:enabled {
+            background-color: #ADD8E6;
+            color: black;
+            box-shadow: 0 0 10px #ADD8E6, 0 0 20px #ADD8E6;
+        }
+
+        #spamModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+        #spamModalContent {
+            background: #111;
+            width: 90%;
+            max-width: 4xl;
+            height: 80%;
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        #spamModalClose {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            background: #FF2E2E;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        #spamIframeContainer {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
-
 <body class="flex flex-col items-center min-h-screen p-6">
 
-
-
-    <header class="w-full flex justify-center items-center py-4 px-6 border-b border-pink-500/30">
-
-        <h1 class="text-3xl font-bold neon">FOMO SOCIAL</h1>
-
-    </header>
-
-
-
-    <!-- Seção de Login -->
-
-    <main id="loginSection" class="w-full max-w-sm mt-10 p-6 bg-[#111] border border-pink-500/30 rounded-2xl shadow-xl">
-
-        <h2 class="text-2xl font-bold mb-4 text-center neon">Acessar</h2>
-
-        <form id="loginForm" class="space-y-4">
-
-            <div>
-
-                <label for="loginEmail" class="block text-sm font-medium text-gray-400">E-mail</label>
-
-                <input type="email" id="loginEmail" placeholder="Digite seu e-mail" required
-
-                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
-
-            </div>
-
-            <div>
-
-                <label for="loginPassword" class="block text-sm font-medium text-gray-400">Senha</label>
-
-                <input type="password" id="loginPassword" placeholder="Digite sua senha" required
-
-                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
-
-            </div>
-
-            <button type="submit"
-
-                    class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-black bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 transition-all">
-
-                Entrar
-
-            </button>
-
-        </form>
-
-        <p class="text-center text-sm mt-4">
-
-            Ainda não tem uma conta?
-
-            <a href="#" id="showRegisterBtn" class="font-bold text-pink-500 hover:text-pink-600 transition-colors">Cadastre-se</a>
-
-        </p>
-
-        <div id="loginStatus" class="mt-4 text-center text-sm"></div>
-
-    </main>
-
-   
-
-    <!-- Seção de Cadastro (inicialmente oculta) -->
-
-    <main id="registerSection" class="hidden w-full max-w-sm mt-10 p-6 bg-[#111] border border-pink-500/30 rounded-2xl shadow-xl">
-
-        <h2 class="text-2xl font-bold mb-4 text-center neon">Cadastre-se</h2>
-
-        <form id="registerForm" class="space-y-4">
-
-            <div>
-
-                <label for="registerEmail" class="block text-sm font-medium text-gray-400">E-mail</label>
-
-                <input type="email" id="registerEmail" placeholder="Seu e-mail" required
-
-                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
-
-            </div>
-
-            <div>
-
-                <label for="registerPassword" class="block text-sm font-medium text-gray-400">Senha</label>
-
-                <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required
-
-                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
-
-            </div>
-
-            <button type="submit"
-
-                    class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-black bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 transition-all">
-
-                Criar Conta
-
-            </button>
-
-        </form>
-
-        <p class="text-center text-sm mt-4">
-
-            Já tem uma conta?
-
-            <a href="#" id="showLoginBtn" class="font-bold text-pink-500 hover:text-pink-600 transition-colors">Fazer login</a>
-
-        </p>
-
-        <div id="registerStatus" class="mt-4 text-center text-sm"></div>
-
-    </main>
-
-
-
-    <!-- Dashboard (inicialmente oculta) -->
-
-    <main id="dashboard" class="hidden mt-10 w-full max-w-3xl">
-
-        <div class="bg-[#111] border border-pink-500/30 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
-
-            <h2 class="text-2xl font-bold mb-4 neon text-center">Dashboard</h2>
-
-            <p class="mb-4 text-center">Logado como: <span id="userEmail" class="font-mono text-cyan-400 break-all"></span></p>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-
-                <button class="btn-dashboard flex items-center justify-center gap-2" id="btn1" onclick="window.open('https://chat.whatsapp.com/KtQeB6Ua9jI0wWEBqrPDyL?mode=ac_t','_blank')">
-
-                    <i class="fab fa-whatsapp"></i> VIP
-
-                </button>
-
-                <button class="btn-dashboard" id="btn2">
-
-                    <i class="fa-solid fa-rocket"></i> Trend
-
-                </button>
-
-                <button class="btn-dashboard" id="btn3" onclick="alert('Moeda secreta em construção!')">
-
-                    <i class="fa-solid fa-bitcoin-sign"></i> Secret
-
-                </button>
-
-                <button class="btn-dashboard" id="btn4" onclick="alert('Relatório em construção!')">
-
-                    <i class="fa-solid fa-paperclip"></i> Report
-
-                </button>
-
-                <button class="btn-dashboard" id="btn5">
-
-                    <i class="fa-solid fa-parachute-box"></i> Airdrop
-
-                </button>
-
-                <button class="btn-dashboard" id="btn6" onclick="alert('Trade em construção!')">
-
-                    <i class="fa-solid fa-money-bill-trend-up"></i> Trade
-
-                </button>
-
-            </div>
-
-            <button id="logoutBtn" class="w-full py-3 px-4 mt-4 text-black bg-red-500 hover:bg-red-600 rounded-lg shadow-sm font-medium transition-colors">
-
-                Sair
-
-            </button>
-
-        </div>
-
-    </main>
-
-
-
-    <!-- Modais e scripts para pop-ups de iframe -->
-
-    <div id="spamModal">
-
-        <div id="spamModalContent">
-
-            <button id="spamModalClose">X</button>
-
-            <div id="spamIframeContainer"></div>
-
-        </div>
-
-    </div>
-
-   
-
-    <!-- SDKs do Firebase -->
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-
-   
-
-    <script>
-
-        // Suas credenciais do Firebase
-
-        const firebaseConfig = {
-
-            apiKey: "AIzaSyAAGCz7m_4obWBtz5P-7gP8jbkFasLzcs0",
-
-            authDomain: "fomos-52a64.firebaseapp.com",
-
-            projectId: "fomos-52a64",
-
-            storageBucket: "fomos-52a64.firebasestorage.app",
-
-            messagingSenderId: "640156456157",
-
-            appId: "1:640156456157:web:53375bbc27fcc914787734",
-
-            measurementId: "G-GZ7844HHS9"
-
-        };
-
-       
-
-        // Inicializa o Firebase
-
-        const app = firebase.initializeApp(firebaseConfig);
-
-        const auth = app.auth();
-
-
-
-        // Elementos do DOM
-
-        const loginSection = document.getElementById('loginSection');
-
-        const registerSection = document.getElementById('registerSection');
-
-        const dashboard = document.getElementById('dashboard');
-
-        const loginForm = document.getElementById('loginForm');
-
-        const registerForm = document.getElementById('registerForm');
-
-        const showRegisterBtn = document.getElementById('showRegisterBtn');
-
-        const showLoginBtn = document.getElementById('showLoginBtn');
-
-        const loginStatus = document.getElementById('loginStatus');
-
-        const registerStatus = document.getElementById('registerStatus');
-
-        const userEmailSpan = document.getElementById('userEmail');
-
-        const logoutBtn = document.getElementById('logoutBtn');
-
-       
-
-        // Lógica de alternância entre login e cadastro
-
-        showRegisterBtn.addEventListener('click', (e) => {
-
-            e.preventDefault();
-
-            loginSection.classList.add('hidden');
-
-            registerSection.classList.remove('hidden');
-
-            loginStatus.textContent = ''; // Limpa mensagens de status
-
-        });
-
-
-
-        showLoginBtn.addEventListener('click', (e) => {
-
-            e.preventDefault();
-
-            registerSection.classList.add('hidden');
-
-            loginSection.classList.remove('hidden');
-
-            registerStatus.textContent = ''; // Limpa mensagens de status
-
-        });
-
-       
-
-        // Função para mostrar mensagem de status
-
-        function showStatus(element, message, isError = false) {
-
-            element.textContent = message;
-
-            element.style.color = isError ? 'red' : 'green';
-
-        }
-
-
-
-        // Evento de submissão do formulário de login
-
-        loginForm.addEventListener('submit', async (e) => {
-
-            e.preventDefault();
-
-            const email = loginForm['loginEmail'].value;
-
-            const password = loginForm['loginPassword'].value;
-
-           
-
-            try {
-
-                await auth.signInWithEmailAndPassword(email, password);
-
-                showStatus(loginStatus, 'Login bem-sucedido!', false);
-
-                // O onAuthStateChanged vai cuidar de mostrar o dashboard
-
-            } catch (error) {
-
-                console.error("Erro de login:", error);
-
-                let errorMessage = "Erro ao fazer login. Verifique seu e-mail e senha.";
-
-                switch (error.code) {
-
-                    case 'auth/user-not-found':
-
-                    case 'auth/wrong-password':
-
-                        errorMessage = "E-mail ou senha incorretos.";
-
-                        break;
-
-                    case 'auth/invalid-email':
-
-                        errorMessage = "O e-mail fornecido é inválido.";
-
-                        break;
-
-                }
-
-                showStatus(loginStatus, errorMessage, true);
-
-            }
-
-        });
-
-
-
-        // Evento de submissão do formulário de cadastro
-
-        registerForm.addEventListener('submit', async (e) => {
-
-            e.preventDefault();
-
-            const email = registerForm['registerEmail'].value;
-
-            const password = registerForm['registerPassword'].value;
-
-           
-
-            try {
-
-                await auth.createUserWithEmailAndPassword(email, password);
-
-                showStatus(registerStatus, 'Cadastro realizado com sucesso! Faça login para continuar.', false);
-
-                // O usuário foi criado, ele pode agora fazer login
-
-            } catch (error) {
-
-                console.error("Erro de cadastro:", error);
-
-                let errorMessage = "Erro ao criar conta.";
-
-                switch (error.code) {
-
-                    case 'auth/email-already-in-use':
-
-                        errorMessage = 'O e-mail fornecido já está em uso.';
-
-                        break;
-
-                    case 'auth/weak-password':
-
-                        errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
-
-                        break;
-
-                    case 'auth/invalid-email':
-
-                        errorMessage = 'O e-mail fornecido é inválido.';
-
-                        break;
-
-                }
-
-                showStatus(registerStatus, errorMessage, true);
-
-            }
-
-        });
-
-
-
-        // Evento de clique para sair
-
-        logoutBtn.addEventListener('click', async () => {
-
-            await auth.signOut();
-
-            // O onAuthStateChanged vai cuidar de mostrar a tela de login
-
-        });
-
-
-
-        // Listener de estado de autenticação do Firebase
-
-        // Essa é a melhor prática para gerenciar a interface
-
-        auth.onAuthStateChanged(user => {
-
-            if (user) {
-
-                // Usuário logado
-
-                loginSection.classList.add('hidden');
-
-                registerSection.classList.add('hidden');
-
-                dashboard.classList.remove('hidden');
-
-                userEmailSpan.textContent = user.email;
-
-            } else {
-
-                // Nenhum usuário logado
-
-                dashboard.classList.add('hidden');
-
-                loginSection.classList.remove('hidden');
-
-            }
-
-        });
-
-       
-
-        // Lógica dos botões que abrem modais
-
-        const btn2 = document.getElementById('btn2');
-
-        const btn5 = document.getElementById('btn5');
-
-        const spamModal = document.getElementById('spamModal');
-
-        const spamIframeContainer = document.getElementById('spamIframeContainer');
-
-        const spamModalClose = document.getElementById('spamModalClose');
-
-
-
-        function openIframeModal(src) {
-
-            spamIframeContainer.innerHTML = '';
-
-            const iframe = document.createElement('iframe');
-
-            iframe.src = src;
-
-            iframe.style.width = '100%';
-
-            iframe.style.height = '100%';
-
-            iframe.style.border = 'none';
-
-            spamIframeContainer.appendChild(iframe);
-
-            spamModal.style.display = 'flex';
-
-        }
-
-
-
-        btn2.addEventListener('click', () => {
-
-            openIframeModal('trend.html');
-
-        });
-
-
-
-        btn5.addEventListener('click', () => {
-
-            openIframeModal('airdrop.html');
-
-        });
-
-
-
-        spamModalClose.addEventListener('click', () => {
-
-            spamIframeContainer.innerHTML = '';
-
-            spamModal.style.display = 'none';
-
-        });
-
-
-
-    </script>
-
-
-
-    <footer class="w-full mt-6 text-center text-gray-400 text-xs">
-
-        &copy; 2024 FOMO SOCIAL. Todos os direitos reservados.
-
-    </footer>
-
-
+    <header class="w-full flex justify-center items-center py-4 px-6 border-b border-pink-500/30">
+        <h1 class="text-3xl font-bold neon">FOMO SOCIAL</h1>
+    </header>
+
+    <!-- Seção de Login -->
+    <main id="loginSection" class="w-full max-w-sm mt-10 p-6 bg-[#111] border border-pink-500/30 rounded-2xl shadow-xl">
+        <h2 class="text-2xl font-bold mb-4 text-center neon">Acessar</h2>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="loginEmail" class="block text-sm font-medium text-gray-400">E-mail</label>
+                <input type="email" id="loginEmail" placeholder="Digite seu e-mail" required
+                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
+            </div>
+            <div>
+                <label for="loginPassword" class="block text-sm font-medium text-gray-400">Senha</label>
+                <input type="password" id="loginPassword" placeholder="Digite sua senha" required
+                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
+            </div>
+            <button type="submit"
+                    class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-black bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 transition-all">
+                Entrar
+            </button>
+        </form>
+        <p class="text-center text-sm mt-4">
+            Ainda não tem uma conta?
+            <a href="#" id="showRegisterBtn" class="font-bold text-pink-500 hover:text-pink-600 transition-colors">Cadastre-se</a>
+        </p>
+        <div id="loginStatus" class="mt-4 text-center text-sm"></div>
+    </main>
+    
+    <!-- Seção de Cadastro (inicialmente oculta) -->
+    <main id="registerSection" class="hidden w-full max-w-sm mt-10 p-6 bg-[#111] border border-pink-500/30 rounded-2xl shadow-xl">
+        <h2 class="text-2xl font-bold mb-4 text-center neon">Cadastre-se</h2>
+        <form id="registerForm" class="space-y-4">
+            <div>
+                <label for="registerEmail" class="block text-sm font-medium text-gray-400">E-mail</label>
+                <input type="email" id="registerEmail" placeholder="Seu e-mail" required
+                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
+            </div>
+            <div>
+                <label for="registerPassword" class="block text-sm font-medium text-gray-400">Senha</label>
+                <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required
+                       class="mt-1 block w-full px-4 py-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition-colors">
+            </div>
+            <button type="submit"
+                    class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-black bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 transition-all">
+                Criar Conta
+            </button>
+        </form>
+        <p class="text-center text-sm mt-4">
+            Já tem uma conta?
+            <a href="#" id="showLoginBtn" class="font-bold text-pink-500 hover:text-pink-600 transition-colors">Fazer login</a>
+        </p>
+        <div id="registerStatus" class="mt-4 text-center text-sm"></div>
+    </main>
+
+    <!-- Dashboard (inicialmente oculta) -->
+    <main id="dashboard" class="hidden mt-10 w-full max-w-3xl">
+        <div class="bg-[#111] border border-pink-500/30 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+            <h2 class="text-2xl font-bold mb-4 neon text-center">Dashboard</h2>
+            <p class="mb-4 text-center">Logado como: <span id="userEmail" class="font-mono text-cyan-400 break-all"></span></p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <button class="btn-dashboard flex items-center justify-center gap-2" id="btn1" onclick="window.open('https://chat.whatsapp.com/KtQeB6Ua9jI0wWEBqrPDyL?mode=ac_t','_blank')">
+                    <i class="fab fa-whatsapp"></i> VIP
+                </button>
+                <button class="btn-dashboard" id="btn2">
+                    <i class="fa-solid fa-rocket"></i> Trend
+                </button>
+                <button class="btn-dashboard" id="btn3" onclick="alert('Moeda secreta em construção!')">
+                    <i class="fa-solid fa-bitcoin-sign"></i> Secret
+                </button>
+                <button class="btn-dashboard" id="btn4" onclick="alert('Relatório em construção!')">
+                    <i class="fa-solid fa-paperclip"></i> Report
+                </button>
+                <button class="btn-dashboard" id="btn5">
+                    <i class="fa-solid fa-parachute-box"></i> Airdrop
+                </button>
+                <button class="btn-dashboard" id="btn6" onclick="alert('Trade em construção!')">
+                    <i class="fa-solid fa-money-bill-trend-up"></i> Trade
+                </button>
+            </div>
+            <button id="logoutBtn" class="w-full py-3 px-4 mt-4 text-black bg-red-500 hover:bg-red-600 rounded-lg shadow-sm font-medium transition-colors">
+                Sair
+            </button>
+        </div>
+    </main>
+
+    <!-- Modais e scripts para pop-ups de iframe -->
+    <div id="spamModal">
+        <div id="spamModalContent">
+            <button id="spamModalClose">X</button>
+            <div id="spamIframeContainer"></div>
+        </div>
+    </div>
+    
+    <!-- SDKs do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Suas credenciais do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAGCz7m_4obWBtz5P-7gP8jbkFasLzcs0",
+            authDomain: "fomos-52a64.firebaseapp.com",
+            projectId: "fomos-52a64",
+            storageBucket: "fomos-52a64.firebasestorage.app",
+            messagingSenderId: "640156456157",
+            appId: "1:640156456157:web:53375bbc27fcc914787734",
+            measurementId: "G-GZ7844HHS9"
+        };
+        
+        // Inicializa o Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();
+
+        // Elementos do DOM
+        const loginSection = document.getElementById('loginSection');
+        const registerSection = document.getElementById('registerSection');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterBtn = document.getElementById('showRegisterBtn');
+        const showLoginBtn = document.getElementById('showLoginBtn');
+        const loginStatus = document.getElementById('loginStatus');
+        const registerStatus = document.getElementById('registerStatus');
+        const userEmailSpan = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Lógica de alternância entre login e cadastro
+        showRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginSection.classList.add('hidden');
+            registerSection.classList.remove('hidden');
+            loginStatus.textContent = ''; // Limpa mensagens de status
+        });
+
+        showLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+            registerStatus.textContent = ''; // Limpa mensagens de status
+        });
+        
+        // Função para mostrar mensagem de status
+        function showStatus(element, message, isError = false) {
+            element.textContent = message;
+            element.style.color = isError ? 'red' : 'green';
+        }
+
+        // Evento de submissão do formulário de login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm['loginEmail'].value;
+            const password = loginForm['loginPassword'].value;
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showStatus(loginStatus, 'Login bem-sucedido!', false);
+                // O onAuthStateChanged vai cuidar de mostrar o dashboard
+            } catch (error) {
+                console.error("Erro de login:", error);
+                let errorMessage = "Erro ao fazer login. Verifique seu e-mail e senha.";
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        errorMessage = "E-mail ou senha incorretos.";
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = "O e-mail fornecido é inválido.";
+                        break;
+                }
+                showStatus(loginStatus, errorMessage, true);
+            }
+        });
+
+        // Evento de submissão do formulário de cadastro
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = registerForm['registerEmail'].value;
+            const password = registerForm['registerPassword'].value;
+            
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                showStatus(registerStatus, 'Cadastro realizado com sucesso! Faça login para continuar.', false);
+                // O usuário foi criado, ele pode agora fazer login
+            } catch (error) {
+                console.error("Erro de cadastro:", error);
+                let errorMessage = "Erro ao criar conta.";
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'O e-mail fornecido já está em uso.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'O e-mail fornecido é inválido.';
+                        break;
+                }
+                showStatus(registerStatus, errorMessage, true);
+            }
+        });
+
+        // Evento de clique para sair
+        logoutBtn.addEventListener('click', async () => {
+            await auth.signOut();
+            // O onAuthStateChanged vai cuidar de mostrar a tela de login
+        });
+
+        // Listener de estado de autenticação do Firebase
+        // Essa é a melhor prática para gerenciar a interface
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Usuário logado
+                loginSection.classList.add('hidden');
+                registerSection.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                userEmailSpan.textContent = user.email;
+            } else {
+                // Nenhum usuário logado
+                dashboard.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+            }
+        });
+        
+        // Lógica dos botões que abrem modais
+        const btn2 = document.getElementById('btn2');
+        const btn5 = document.getElementById('btn5');
+        const spamModal = document.getElementById('spamModal');
+        const spamIframeContainer = document.getElementById('spamIframeContainer');
+        const spamModalClose = document.getElementById('spamModalClose');
+
+        function openIframeModal(src) {
+            spamIframeContainer.innerHTML = '';
+            const iframe = document.createElement('iframe');
+            iframe.src = src;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            spamIframeContainer.appendChild(iframe);
+            spamModal.style.display = 'flex';
+        }
+
+        btn2.addEventListener('click', () => {
+            openIframeModal('trend.html');
+        });
+
+        btn5.addEventListener('click', () => {
+            openIframeModal('airdrop.html');
+        });
+
+        spamModalClose.addEventListener('click', () => {
+            spamIframeContainer.innerHTML = '';
+            spamModal.style.display = 'none';
+        });
+
+    </script>
+
+    <footer class="w-full mt-6 text-center text-gray-400 text-xs">
+        &copy; 2024 FOMO SOCIAL. Todos os direitos reservados.
+    </footer>
 
 </body>
-
 </html>
